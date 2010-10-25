@@ -11,6 +11,8 @@
  * Known issues:
  * - radioGetPlaylist returns an server error
  *
+ * Changelog since 1.0.0
+ * - added artistGetCorrectName
  *
  * License
  * Copyright (c) 2010, Tijs Verkoyen. All rights reserved.
@@ -24,7 +26,7 @@
  * This software is provided by the author "as is" and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the author be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including neglience or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
  *
  * @author		Tijs Verkoyen <php-lastfm@verkoyen.eu>
- * @version		1.0.0
+ * @version		1.0.1
  *
  * @copyright	Copyright (c) 2010, Tijs Verkoyen. All rights reserved.
  * @license		BSD License
@@ -41,7 +43,7 @@ class LastFm
 	const API_PORT = 80;
 
 	// current version
-	const VERSION = '2.0';
+	const VERSION = '1.0.1';
 
 
 	/**
@@ -552,6 +554,48 @@ class LastFm
 
 		// make the call
 		return $this->doCall('artist.addTags', $parameters, true, 'POST');
+	}
+
+
+	/**
+	 * Get the correct name for an artist
+	 *
+	 * @return	string
+	 * @param	string $artist	The artist name in question.
+	 */
+	public function artistGetCorrectName($artist)
+	{
+		// get info
+		$response = $this->artistGetInfo($artist);
+
+		// init var
+		$name = $response['artist']['name'];
+
+		// it seems the artist should redirect
+		if(substr_count($response['artist']['url'], 'noredirect') > 0)
+		{
+			// get the first similar artist
+			if(isset($response['artist']['similar']['artist'][0]['name'])) $name = $response['artist']['similar']['artist'][0]['name'];
+		}
+
+		// scan the summary
+		if(isset($response['artist']['bio']['summary']))
+		{
+			// is this an incorrect tag?
+			if(substr_count($response['artist']['bio']['summary'], 'incorrect tag'))
+			{
+				// init var
+				$match = array();
+
+				// match
+				preg_match('|incorrect\stag\s.*<a.*>(.*)</a>|iU', $response['artist']['bio']['summary'], $match);
+
+				// any matches?
+				if(isset($match[1])) $name = $match[1];
+			}
+		}
+
+		return $name;
 	}
 
 
