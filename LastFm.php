@@ -154,7 +154,7 @@ class LastFm
 	 * @param	array[optiona] $parameters
 	 * @param	bool[optional] $usePost
 	 */
-	private function doCall($method, array $parameters = null, $authenticate = false, $httpMethod = 'GET')
+	public function doCall($method, array $parameters = null, $authenticate = false, $httpMethod = 'GET')
 	{
 		// allowed HTTP-methods
 		$allowedHTTPMethods = array('GET', 'POST');
