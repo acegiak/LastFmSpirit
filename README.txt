@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== LastFmSpirit ===
 Contributors: acegiak, tijsverkoyen
 Donate link: http://acegiak.net/2014/07/16/last-fm-wordpress-plugin/
 Tags: last.fm,music,charts,api

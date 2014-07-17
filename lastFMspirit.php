@@ -54,6 +54,9 @@ function last_fm_code( $atts ,$content=null) {
 	'track'=>null
 
     ), $atts );
+	if ( "" == get_option( "LastFmKey", "" ) || "" == get_option( "LastFmSecret", "" ) ) {
+		return "*LASTFMSPIRIT ERROR: YOU MUST ENTER YOU API KEY AND SECRET ON THE OPTIONS PAGE*";
+	}
     $table = $LastFmSpirit->doCall($content,$a);
     recursive_unset($table,"`duration|mbid|streamable|\@attr|#text|image`");
     return arrayTable($table,"lastFM".$content,25);
@@ -156,7 +159,7 @@ function last_fm_spirit_options()
 ?>
     <div class="wrap">
         <h2>Last.Fm Spirit Options</h2>
-	<p><?php echo file_get_contents(plugin_dir_path(__FILE__) . 'Readme.md'); ?></p>
+	
         <form method="post" action="options.php">
             <?php wp_nonce_field('update-options') ?>
             <p><strong>Last.Fm Api Key:</strong><br />
@@ -170,6 +173,8 @@ function last_fm_spirit_options()
             <input type="hidden" name="action" value="update" />
             <input type="hidden" name="page_options" value="LastFmKey,LastFmSecret" />
         </form>
+		<h2>Readme:</h2>
+		<p><?php echo preg_replace('`==+(.*?)==+`','<strong>$1</strong>',preg_replace('`\n`','<br/>',file_get_contents(plugin_dir_path(__FILE__) . 'README.txt'))); ?></p>
     </div>
 <?php
 }
