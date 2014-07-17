@@ -57,7 +57,11 @@ function last_fm_code( $atts ,$content=null) {
 	if ( "" == get_option( "LastFmKey", "" ) || "" == get_option( "LastFmSecret", "" ) ) {
 		return "*LASTFMSPIRIT ERROR: YOU MUST ENTER YOU API KEY AND SECRET ON THE OPTIONS PAGE*";
 	}
-    $table = $LastFmSpirit->doCall($content,$a);
+	try{
+		$table = $LastFmSpirit->doCall($content,$a);
+	} catch (Exception $e) {
+		return 'Caught exception: ',  $e->getMessage(), "\n";
+	}
     recursive_unset($table,"`duration|mbid|streamable|\@attr|#text|image`");
     return arrayTable($table,"lastFM".$content,25);
 }
